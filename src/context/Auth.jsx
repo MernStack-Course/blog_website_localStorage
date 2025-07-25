@@ -1,25 +1,19 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AuthContext = createContext();
 
-// const initialDataLocalStorage = [
-//     {
-//         id:1,
-//         username: 'Qasem',
-//         email:"qasimmohammadi520@gmail.com",
-//         password: '1234'
-//     }
-// ];
-// localStorage.setItem('users', JSON.stringify(initialDataLocalStorage));
 export const AuthProvider = ({ children }) => {
-  const [isAuth, setIsAuth] = useState(false);
+  const [isAuth, setIsAuth] = useState(() => {
+    return !!localStorage.getItem("token");
+  });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+//signUp function
   const signUp = async (data) => {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
+    const users = JSON.parse(localStorage.getItem("users")) || [];
     setIsLoading(true);
     if (!data.username || !data.email || !data.password) {
       toast.error("all field is required");
@@ -30,20 +24,22 @@ export const AuthProvider = ({ children }) => {
       if (check) {
         alert("this account is already exist!");
         navigate("/signin");
+        setIsLoading(false);
         return;
       }
+      setIsLoading(true);
       const newUser = {
-        id: users.length +1,
+        id: users.length + 1,
         username: data.username,
         email: data.email,
-        password: data.password
+        password: data.password,
       };
       users.push(newUser);
       console.log(users);
-      if(!localStorage.getItem('users')){
-        localStorage.setItem('users', JSON.stringify([]))
+      if (!localStorage.getItem("users")) {
+        localStorage.setItem("users", JSON.stringify([]));
       }
-      localStorage.setItem('users', JSON.stringify(users)); 
+      localStorage.setItem("users", JSON.stringify(users));
       setIsLoading(false);
       toast.success("your account successfully created!");
       navigate("/signin");
@@ -54,44 +50,74 @@ export const AuthProvider = ({ children }) => {
   };
 
   const checkUserEmail = (email) => {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const existCheck = users.find(user => user.email === email);
-    if(existCheck){
-        return true;
-    }else{
-        return false;
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const existCheck = users.find((user) => user.email === email);
+    if (existCheck) {
+      return true;
+    } else {
+      return false;
     }
-
   };
 
   const signin = (data) => {
     setIsLoading(true);
-    if(!data.email || !data.password){
-        toast('all field are required!');
-        alert("all field required!");
-        return;
+    if (!data.email || !data.password) {
+      toast("all field are required!");
+      alert("all field required!");
+      return;
     }
-    const checkUser = checkUserEmail(data.email);
-    if(checkUser){
-        setIsAuth(true) ;
-        toast.success('successfully signin');
-        setIsLoading(false);
-        navigate('/');
-    }
-    else{
-        alert('incorrect email or password!');
-        setIsLoading(false);
-        setIsAuth(false);
+
+    // function for checking the user email and password...
+    const checkUserEmailPassword = (data) => {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const existCheck = users.find((user) => {
+        if (user.email === data.email && user.password === data.password) {
+        localStorage.setItem('user',JSON.stringify(user));
+          return user.email === data.email && user.password === data.password;
+        }
+      });
+      if (existCheck) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+    //
+    // const checkUser = checkUserEmail(data.email);
+    if (checkUserEmailPassword(data)) {
+        setIsLoading(true);
+      const randChar = Math.random()
+        .toString(20)
+        .substring(2, 3 + 50);
+      localStorage.setItem("token", randChar);
+      setIsAuth(true);
+      toast("successfully signin");
+      setIsLoading(false);
+      navigate("/");
+    } else {
+      alert("incorrect email or password!");
+      setIsLoading(false);
+      setIsAuth(false);
     }
   };
 
+  const signOut = () => {
+    if (isAuth) {
+      localStorage.removeItem("token");
+      localStorage.removeItem('user');
+      setIsLoading(false);
+      setIsAuth(false);
+      navigate("/");
+    }
+  };
   return (
     <AuthContext.Provider
       value={{
-        isAuth,
         isLoading,
         signUp,
-        signin
+        signin,
+        signOut,
+        isAuth,
       }}
     >
       {children}

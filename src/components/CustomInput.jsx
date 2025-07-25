@@ -1,6 +1,6 @@
 import React from "react";
 
-function CustomInput({ type, value, label, onChange }) {
+function CustomInput({ type, value, label, onChange, placeholder = '' }) {
   const handleChange = (e) => {
     onChange(e.target.value);
   };
@@ -11,6 +11,7 @@ function CustomInput({ type, value, label, onChange }) {
       </label>
       <input
         type={type}
+        placeholder={placeholder}
         value={value}
         className="p-2 rounded-md border border-blue-300 focus:border-none focus:outline-blue-400"
         onChange={handleChange}

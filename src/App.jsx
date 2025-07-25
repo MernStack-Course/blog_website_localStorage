@@ -7,12 +7,14 @@ import SignUp from "./pages/SignUp";
 import CreatePost from "./pages/CreatePost";
 import { ToastContainer } from "react-toastify";
 import { useAuthContext } from "./context/Auth";
+import { useRef } from "react";
 
 function App() {
-  const {isAuth} = useAuthContext();
+  const { isAuth,signOut } = useAuthContext();
+
   return (
     <>
-    <ToastContainer/>
+      <ToastContainer />
       <div className=" sticky flex items-center justify-between shadow bg-white p-4 ">
         <div className="pl-10 flex gap-10">
           <NavLink to="/">Home</NavLink>
@@ -28,33 +30,39 @@ function App() {
           >
             Create Post
           </NavLink>
-          
         </div>
         <div className="pr-10">
-
-          {
-            isAuth ?
-          <NavLink
-            className="bg-blue-500 text-white p-2 rounded-md font-semibold border-none
+          {isAuth ? (
+            <button type="button" onClick={signOut} className="bg-blue-500 text-white p-2 rounded-md font-semibold border-none
+          transition-all hover:bg-blue-600
+          " >
+            SignOut
+            </button>
+            
+          ) : (
+            <div className="flex gap-10">
+            <NavLink
+              className="bg-blue-500 text-white p-2 rounded-md font-semibold border-none
           transition-all hover:bg-blue-600
           "
-            to="/signin"
-          >
-            SignIn
-          </NavLink>
-          : <NavLink
-            className="bg-blue-500 text-white p-2 rounded-md font-semibold border-none
+              to="/signin"
+            >
+              SignIn
+            </NavLink>
+            <NavLink
+              className="bg-blue-500 text-white p-2 rounded-md font-semibold border-none
           transition-all hover:bg-blue-600
           "
-            to="/signup"
-          >
-            SignUp
-          </NavLink>
-          }
+              to="/signup"
+            >
+              SignUp
+            </NavLink>
+          </div>
+          )}
         </div>
       </div>
       <Outlet />
-      
+
       {/* <CreatePost/> */}
     </>
   );
