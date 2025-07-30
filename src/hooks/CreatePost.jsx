@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as yup from "yup";
 export const useCreatePost = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [storagePost, setStoragePost] = useState([]);
   const postSchema = yup.object().shape({
     title: yup.string().required().min(4),
     content: yup.string().required().min(10),
@@ -13,7 +14,8 @@ export const useCreatePost = () => {
         id: post.length + 1,
         post_title: data.title,
         postContent: data.content,
-        user: (JSON.parse(localStorage.getItem('user'))).username
+        user: (JSON.parse(localStorage.getItem('user'))).username,
+        postImages: data.postImages
       };
 
       post.push(newPost);
@@ -26,9 +28,24 @@ export const useCreatePost = () => {
     }
   };
 
+  const getPosts = async() =>{
+    setIsLoading(true)
+    try {
+        const posts = JSON.parse(localStorage.getItem('post')) || '';
+        setStoragePost(posts);
+        setIsLoading(false)
+    } catch (error) {
+        setIsLoading(false);
+    }
+}
+useEffect(() =>{
+    getPosts();
+},[])
+
   return {
     isLoading,
     postSchema,
     createPost,
+    storagePost
   };
 };

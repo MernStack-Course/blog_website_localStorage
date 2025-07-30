@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import CustomInput from "../components/CustomInput";
-import { useRef } from "react";
+import uploadImageHolder from '../../public/vite.svg'
+
+
+
 import { useCreatePost } from "../hooks/CreatePost";
 import CustomButton from "../components/CustomButton";
 
@@ -12,6 +15,21 @@ export default function CreatePost() {
     content: "",
   });
   const [error, setError] = useState({ title: [], content: [] });
+  const [images, setImages] = useState([]);
+  const handleFileChange =async(e) =>{
+    const files = Array.from(e.target.files);
+    files.map(file => {
+      const reader = new FileReader();
+      reader.onloadend= () =>{
+        const base64 = reader.result;
+        const newImages= [...images,base64];
+        setImages(newImages);
+      }
+      reader.readAsDataURL(file);
+    })
+
+  }
+
   const handleChange = (fieldName, value) => {
     setPost((prev) => ({
       ...prev,
@@ -21,16 +39,19 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+        console.log("base64: ",images.length);
     try {
       await postSchema.validate(post, { abortEarly: false });
       const postObject = {
         title:post.title,
         content: post.content,
-        user:localStorage.getItem('user') ? localStorage.getItem('user') : ''
+        user:localStorage.getItem('user') ? localStorage.getItem('user') : '',
+        postImages: images
       }
       await createPost(postObject);
       setPost({title: '', content: ''})
       setError({title:[], content:[]});
+      setImages([]);
     } catch (validationErrors) {
       const newErrors = { title: [], content: [] };
       validationErrors.inner.forEach((err) => {
@@ -70,6 +91,16 @@ export default function CreatePost() {
           {
             error && error.content.map((err, index) => <p className="text-red-500" key={index}>{err}</p>)
           }
+        </div>
+        <div className="mt-6">
+          <label htmlFor="image" className="flex flex-col items-center gap-2">
+            <h1 className="font-semibold text-blue-500">choose images</h1>
+            <img src={uploadImageHolder} alt="" className="w-10 h-10" />
+          </label>
+          <input type="file" className="hidden" id="image" onChange={handleFileChange} multiple/>
+        </div>
+        <div className="flex justify-center items-center">
+          <img src={images} alt="" className="w-96" />
         </div>
         <CustomButton
           value="Create Post"

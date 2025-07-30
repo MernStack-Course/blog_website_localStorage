@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const AuthContext = createContext();
-
 export const AuthProvider = ({ children }) => {
   const [isAuth, setIsAuth] = useState(() => {
     return !!localStorage.getItem("token");
@@ -11,7 +10,52 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-//signUp function
+  const signin = (data) => {
+    setIsLoading(true);
+    if (!data.email || !data.password) {
+      toast("all field are required!");
+      return;
+    }
+    const checkUserEmailPassword = (data) => {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const existCheck = users.find((user) => {
+        if (user.email === data.email && user.password === data.password) {
+          localStorage.setItem("user", JSON.stringify(user));
+          return user.email === data.email && user.password === data.password;
+        }
+      });
+      if (existCheck) {
+        return true;
+      } else {
+        return false;
+      }
+    };
+    if (checkUserEmailPassword(data)) {
+      setIsLoading(true);
+      const randChar = Math.random()
+        .toString(20)
+        .substring(2, 3 + 50);
+      localStorage.setItem("token", randChar);
+      setIsAuth(true);
+      toast("successfully signin");
+      setIsLoading(false);
+      navigate("/");
+    } else {
+      alert("incorrect email or password!");
+      setIsLoading(false);
+      setIsAuth(false);
+    }
+  };
+
+  const checkUserEmail = (email) => {
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+    const existCheck = users.find((user) => user.email === email);
+    if (existCheck) {
+      return true;
+    } else {
+      return false;
+    }
+  };
   const signUp = async (data) => {
     const users = JSON.parse(localStorage.getItem("users")) || [];
     setIsLoading(true);
@@ -49,62 +93,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const checkUserEmail = (email) => {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    const existCheck = users.find((user) => user.email === email);
-    if (existCheck) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
-  const signin = (data) => {
-    setIsLoading(true);
-    if (!data.email || !data.password) {
-      toast("all field are required!");
-      alert("all field required!");
-      return;
-    }
-
-    // function for checking the user email and password...
-    const checkUserEmailPassword = (data) => {
-      const users = JSON.parse(localStorage.getItem("users")) || [];
-      const existCheck = users.find((user) => {
-        if (user.email === data.email && user.password === data.password) {
-        localStorage.setItem('user',JSON.stringify(user));
-          return user.email === data.email && user.password === data.password;
-        }
-      });
-      if (existCheck) {
-        return true;
-      } else {
-        return false;
-      }
-    };
-    //
-    // const checkUser = checkUserEmail(data.email);
-    if (checkUserEmailPassword(data)) {
-        setIsLoading(true);
-      const randChar = Math.random()
-        .toString(20)
-        .substring(2, 3 + 50);
-      localStorage.setItem("token", randChar);
-      setIsAuth(true);
-      toast("successfully signin");
-      setIsLoading(false);
-      navigate("/");
-    } else {
-      alert("incorrect email or password!");
-      setIsLoading(false);
-      setIsAuth(false);
-    }
-  };
-
   const signOut = () => {
     if (isAuth) {
       localStorage.removeItem("token");
-      localStorage.removeItem('user');
+      localStorage.removeItem("user");
       setIsLoading(false);
       setIsAuth(false);
       navigate("/");
@@ -124,7 +116,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
 export const useAuthContext = () => {
   return useContext(AuthContext);
 };

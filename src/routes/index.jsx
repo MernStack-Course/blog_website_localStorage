@@ -6,6 +6,7 @@ import SignUp from "../pages/SignUp";
 import ProtectedRoutes from "../pages/ProtectedRoutes";
 import CreatePost from "../pages/CreatePost";
 import { AuthProvider } from "../context/Auth";
+import Post from "../pages/Post";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,9 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },{
+        path:'/post',
+        element: <Post/>
       },
       {
         path: "/createPost",

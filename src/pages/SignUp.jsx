@@ -32,7 +32,6 @@ function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("clicked")
     try {
       await validationSchema.validate(data, { abortEarly: false });
       signUp(data);

@@ -41,8 +41,8 @@ function SignIn() {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="grid min-w-96 pt-10 pb-10 pr-3 pl-3 gap-3 border border-blue-300 rounded-sm">
-        <h1 className="font-bold text-center text-blue-500 text-2xl mb-7">
-          SignIn in your account
+        <h1 className="font-bold text-center w-full text-blue-500 text-2xl mb-7">
+          SignIn to your account
         </h1>
         <form onSubmit={handleSubmit}>
           <CustomInput
