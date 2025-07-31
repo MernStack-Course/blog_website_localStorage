@@ -7,6 +7,7 @@ import ProtectedRoutes from "../pages/ProtectedRoutes";
 import CreatePost from "../pages/CreatePost";
 import { AuthProvider } from "../context/Auth";
 import Post from "../pages/Post";
+import Profile from "../pages/Profile";
 
 const router = createBrowserRouter([
   {
@@ -53,9 +54,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/profile',
+    element: <Profile/>
+  },
+  {
     path: "*",
     element: <Home />,
   },
+
 ]);
 
 export default router;

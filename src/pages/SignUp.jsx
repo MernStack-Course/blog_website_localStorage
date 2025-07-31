@@ -18,9 +18,20 @@ function SignUp() {
     password: [],
   });
   const validationSchema = yup.object().shape({
-    username: yup.string().required("Username is required!"),
+    username: yup
+      .string()
+      .matches(/[A-Z]/)
+      .min(5)
+      .required("Username is required!"),
     email: yup.string().email().required("Email is required"),
-    password: yup.string().required("password is required"),
+    password: yup
+      .string()
+      .min(8)
+      .matches(/[A-Z]/)
+      .matches(/[a-z]/)
+      .matches(/[0-9]/)
+      .matches(/[!@#$%&*]/)
+      .required("password is required"),
   });
 
   const handleChange = (fieldName, value) => {

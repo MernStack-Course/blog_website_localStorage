@@ -1,17 +1,10 @@
-import { Link, NavLink, Outlet } from "react-router-dom";
+import {  NavLink, Outlet } from "react-router-dom";
 import "./App.css";
-import CustomInput from "./components/CustomInput";
-import Navbar from "./pages/Navbar";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import CreatePost from "./pages/CreatePost";
 import { ToastContainer } from "react-toastify";
 import { useAuthContext } from "./context/Auth";
-import { useRef } from "react";
-
+import { FiSun, FiMoon } from "react-icons/fi";
 function App() {
   const { isAuth,signOut } = useAuthContext();
-
   return (
     <>
       <ToastContainer />
@@ -30,6 +23,8 @@ function App() {
           >
             Create Post
           </NavLink>
+          {/* <FiSun/>
+          <FiMoon/> */}
         </div>
         <div className="pr-10">
           {isAuth ? (

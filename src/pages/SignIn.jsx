@@ -21,7 +21,14 @@ function SignIn() {
 
   const validationSchema = yup.object().shape({
     email: yup.string().email().required("Email is required!"),
-    password: yup.string().required("password is required!"),
+    password: yup
+      .string()
+      .min(8)
+      .matches(/[A-Z]/)
+      .matches(/[a-z]/)
+      .matches(/[0-9]/)
+      .matches(/[!@#$%&*]/)
+      .required("password is required!"),
   });
 
   const handleSubmit = async (e) => {

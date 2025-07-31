@@ -10,12 +10,12 @@ import CustomButton from "../components/CustomButton";
 
 export default function CreatePost() {
   const { postSchema, createPost } = useCreatePost();
+  const [images, setImages] = useState([]);
   const [post, setPost] = useState({
     title: "",
     content: "",
   });
   const [error, setError] = useState({ title: [], content: [] });
-  const [images, setImages] = useState([]);
   const handleFileChange =async(e) =>{
     const files = Array.from(e.target.files);
     files.map(file => {
@@ -39,7 +39,6 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-        console.log("base64: ",images.length);
     try {
       await postSchema.validate(post, { abortEarly: false });
       const postObject = {
@@ -50,7 +49,7 @@ export default function CreatePost() {
       }
       await createPost(postObject);
       setPost({title: '', content: ''})
-      setError({title:[], content:[]});
+      setError({title:[], content:[]}); 
       setImages([]);
     } catch (validationErrors) {
       const newErrors = { title: [], content: [] };
