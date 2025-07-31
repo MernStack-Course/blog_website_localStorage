@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import * as yup from "yup";
+
 export const useCreatePost = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [storagePost, setStoragePost] = useState([]);
   const [refresh, setRefresh] = useState(false);
-  const [like , setLike] = useState(false);
 
   const postSchema = yup.object().shape({
     title: yup.string().required().min(4),
@@ -20,6 +20,7 @@ export const useCreatePost = () => {
         user: JSON.parse(localStorage.getItem("user")).username,
         email: JSON.parse(localStorage.getItem("user")).email,
         likedBy: [],
+        createAt: new Date().toISOString(),
         postImages: data.postImages,
       };
 
@@ -53,23 +54,24 @@ export const useCreatePost = () => {
     setRefresh(!refresh);
   };
 
-  const handleLike = (postId, userEmail) =>{
-    setLike(!like);
-    const posts =  JSON.parse(localStorage.getItem("post")) || "";
-    const updatePost = posts.map(post => {
-      if(post.id === postId){
+  const handleLike = (postId, userEmail) => {
+    const posts = JSON.parse(localStorage.getItem("post")) || "";
+    const updatePost = posts.map((post) => {
+      if (post.id === postId) {
         const likedBy = post.likedBy || [];
         const alreadyLiked = likedBy.includes(userEmail);
         return {
           ...post,
-          likedBy: alreadyLiked ? likedBy.filter( u => u !== userEmail) : [...likedBy, userEmail]
-        }
+          likedBy: alreadyLiked
+            ? likedBy.filter((u) => u !== userEmail)
+            : [...likedBy, userEmail],
+        };
       }
       return post;
-    })
-    localStorage.setItem('post', JSON.stringify(updatePost));
+    });
+    localStorage.setItem("post", JSON.stringify(updatePost));
     setRefresh(!refresh);
-  }
+  };
 
   return {
     isLoading,
@@ -78,6 +80,5 @@ export const useCreatePost = () => {
     handleDelete,
     handleLike,
     storagePost,
-    like
   };
 };

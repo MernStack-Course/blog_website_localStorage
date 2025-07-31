@@ -2,10 +2,13 @@ import { useCreatePost } from "../hooks/CreatePost";
 import { NavLink } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useAuthContext } from "../context/Auth";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
 
 function Post() {
-  const { storagePost, isLoading, like, handleLike } = useCreatePost();
-  const {isAuth} = useAuthContext();
+  const { storagePost, isLoading, handleLike } = useCreatePost();
+  const { isAuth } = useAuthContext();
   const profileData = JSON.parse(localStorage.getItem("user"));
 
   if (isLoading) {
@@ -45,11 +48,14 @@ function Post() {
                 key={post.id}
                 className="w-full border rounded-md border-blue-500 mb-5 px-3 py-3"
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 text-left border rounded-full flex justify-center items-center bg-blue-400 text-white">
-                    {post.user.slice(0, 1)}
+                <div className="grid gap-1  ">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 text-left border rounded-full flex justify-center items-center bg-blue-400 text-white">
+                      {post.user.slice(0, 1)}
+                    </div>
+                    <span>{post.user}</span>
                   </div>
-                  <span>{post.user}</span>
+                  <div className="text-blue-400 ml-2">{dayjs(post.createAt).fromNow()}</div>
                 </div>
                 <h1 className="text-blue-500 text-2xl mt-4 mb-2   ">
                   {post.post_title}:
@@ -60,28 +66,30 @@ function Post() {
                     <img src={p} alt="" />
                   </div>
                 ))}
-                {isAuth ?
-                <div className="flex mt-5 items-center gap-5">
-                  <div
-                    onClick={() =>
-                      handleLike(
-                        post.id,
+                {isAuth ? (
+                  <div className="flex mt-5 items-center gap-5">
+                    <div
+                      onClick={() =>
+                        handleLike(
+                          post.id,
+                          JSON.parse(localStorage.getItem("user")).email
+                        )
+                      }
+                    >
+                      {post.likedBy.includes(
                         JSON.parse(localStorage.getItem("user")).email
-                      )
-                    }
-                  >
-                    {post.likedBy.includes(
-                      JSON.parse(localStorage.getItem("user")).email
-                    ) ? (
-                      <FaHeart className="text-red-500" />
-                    ) : (
-                      // <p>post.likedBY</p>
-                      <FaRegHeart className="text-gray-400" />
-                    )}
+                      ) ? (
+                        <FaHeart className="text-red-500" />
+                      ) : (
+                        // <p>post.likedBY</p>
+                        <FaRegHeart className="text-gray-400" />
+                      )}
+                    </div>
+                    <div>{post.likedBy ? post.likedBy.length : 0}</div>
                   </div>
-                  <div>{post.likedBy ? post.likedBy.length : 0}</div>
-                </div>
-                : ''}
+                ) : (
+                  ""
+                )}
               </div>
             );
           })}

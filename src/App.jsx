@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <ToastContainer />
-      <div className=" sticky flex items-center justify-between shadow bg-white p-4 ">
+      <div className=" sticky flex items-center justify-between shadow bg-white  p-4 ">
         <div className="pl-10 flex gap-10">
           <NavLink to="/" className={({ isActive }) => (isActive ? "text-blue-700" : "")}>Home</NavLink>
           <NavLink
